@@ -1,2 +1,2 @@
 # move-files-script
-The script will organize all of your files in any directory
+The Python script will organize all of your files in any directory
