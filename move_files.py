@@ -14,7 +14,7 @@ def askQuestion():
         print("You did not enter an answer.")
         exit()
 
-    if checkIfExternal.lower() == "yes":
+    if checkIfExternal.lower() == "yes" or checkIfExternal.lower() == "y":
         isExternal = True
         externalStoragePath = input("Enter the path of the folder your want to clean. ")
     else:
