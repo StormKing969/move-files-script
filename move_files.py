@@ -98,28 +98,33 @@ def cleanUp(file_path, filename, directory, extensions):
             
         safeMove(file_path, directory, "Others", filename)
 
-def moveToDirectory(file_path, directory, extensions):
-    for filename in os.listdir(file_path):
-        cleanUpLocation(directory, extensions)
 
-def cleanUpLocation(directory, extensions):
+def cleanUpLocation(directory, extensions, destinationDirectory):
     for filename in os.listdir(directory):
         # Get the file path of the current file
         file_path = os.path.join(directory, filename)
 
         # Check if the current file is a file
         if os.path.isfile(file_path):
-            cleanUp(file_path, filename, directory, extensions)
+            cleanUp(file_path, filename, destinationDirectory, extensions)
 
-        # if os.path.isdir(file_path):
-        #     moveToDirectory(file_path, directory, extensions)
+    # Clean up the directories
+    for filename in os.listdir(directory):
+        # Get the file path of the current file
+        file_path = os.path.join(directory, filename)
+        print("filename " + filename)
+        print(filename not in extensions.values())
+
+        if os.path.isdir(file_path) and filename not in extensions.values() and filename != "Others":
+            cleanUpLocation(file_path, extensions, destinationDirectory)
 
     print("All the files have been moved")
 
 def main():
     extensions = extension()
     location = askQuestion()
-    cleanUpLocation(location, extensions)
+    destinationDirectory = location
+    cleanUpLocation(location, extensions, destinationDirectory)
 
 if __name__ == "__main__":
     main()
