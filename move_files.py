@@ -1,6 +1,27 @@
 import os
 import shutil
 
+def extension():
+    # The extension of the files.
+    extensions = {
+        ".jpg": "Images",
+        ".jpeg": "Images",
+        ".png": "Images",
+        ".gif": "Images",
+        ".mp4": "Videos",
+        ".avi": "Videos",
+        ".mov": "Videos",
+        ".pdf": "Documents",
+        ".txt": "Documents",
+        ".doc": "Documents",
+        ".docx": "Documents",
+        ".ppt": "Documents",
+        ".pptx": "Documents",
+        ".xls": "Documents",
+    }
+
+    return extensions
+
 def askQuestion():
     cleanUpLocation = input("Which folder do you want to clean up? ")
 
@@ -44,52 +65,61 @@ def askQuestion():
     
     return directory
 
-def cleanUpLocation(directory):
-# The extension of the files.
-    extensions = {
-        ".jpg": "Images",
-        ".jpeg": "Images",
-        ".png": "Images",
-        ".gif": "Images",
-        ".mp4": "Videos",
-        ".avi": "Videos",
-        ".mov": "Videos",
-        ".pdf": "Documents",
-        ".txt": "Documents",
-        ".doc": "Documents",
-        ".docx": "Documents",
-        ".ppt": "Documents",
-        ".pptx": "Documents",
-        ".xls": "Documents",
-    }
+# Move the current file to the directory for the current extension and renames the duplicates
+def safeMove(file_path, directory, extension, file_name):
+    duplicate = 0
+    old_file_name = file_name
+    while True:
+        destinationPath = os.path.join(directory, extension, file_name)
+        # Check if the file already exists or not
+        if not os.path.exists(destinationPath):
+            break
+        else:
+            print("The file already exists")
+            duplicate += 1
+            file_name = os.path.splitext(old_file_name)[0] + "(" + str(duplicate) + ")" + os.path.splitext(old_file_name)[1]
 
+    shutil.move(file_path, os.path.join(directory, extension, file_name))
+
+def cleanUp(file_path, filename, directory, extensions):
+    # Get the extension of the current file in lowercase
+    extension = os.path.splitext(filename)[1].lower()
+
+    if extension in extensions.keys():
+        # Check if the directory for the current extension exists
+        if not os.path.exists(os.path.join(directory, extensions[extension])):
+            # Create the directory for the current extension
+            os.makedirs(os.path.join(directory, extensions[extension]))
+
+        safeMove(file_path, directory, extensions[extension], filename)
+    else:
+        if not os.path.exists(os.path.join(directory, "Others")):
+            os.makedirs(os.path.join(directory, "Others"))
+            
+        safeMove(file_path, directory, "Others", filename)
+
+def moveToDirectory(file_path, directory, extensions):
+    for filename in os.listdir(file_path):
+        cleanUpLocation(directory, extensions)
+
+def cleanUpLocation(directory, extensions):
     for filename in os.listdir(directory):
         # Get the file path of the current file
         file_path = os.path.join(directory, filename)
 
         # Check if the current file is a file
         if os.path.isfile(file_path):
-            # Get the extension of the current file in lowercase
-            extension = os.path.splitext(filename)[1].lower()
+            cleanUp(file_path, filename, directory, extensions)
 
-            if extension in extensions.keys():
-                # Check if the directory for the current extension exists
-                if not os.path.exists(os.path.join(directory, extensions[extension])):
-                    # Create the directory for the current extension
-                    os.makedirs(os.path.join(directory, extensions[extension]))
-                # Move the current file to the directory for the current extension
-                shutil.move(file_path, os.path.join(directory, extensions[extension], filename))
-            else:
-                if not os.path.exists(os.path.join(directory, "Others")):
-                    os.makedirs(os.path.join(directory, "Others"))
-                # Move the current file to the directory called "Others" for unknown extension
-                shutil.move(file_path, os.path.join(directory, "Others", filename))
+        # if os.path.isdir(file_path):
+        #     moveToDirectory(file_path, directory, extensions)
 
     print("All the files have been moved")
 
 def main():
+    extensions = extension()
     location = askQuestion()
-    cleanUpLocation(location)
+    cleanUpLocation(location, extensions)
 
 if __name__ == "__main__":
     main()
