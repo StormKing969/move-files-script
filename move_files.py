@@ -112,19 +112,17 @@ def cleanUpLocation(directory, extensions, destinationDirectory):
     for filename in os.listdir(directory):
         # Get the file path of the current file
         file_path = os.path.join(directory, filename)
-        print("filename " + filename)
-        print(filename not in extensions.values())
 
+        # Check if the current file is a directory and that its not part of the created directories
         if os.path.isdir(file_path) and filename not in extensions.values() and filename != "Others":
             cleanUpLocation(file_path, extensions, destinationDirectory)
-
-    print("All the files have been moved")
 
 def main():
     extensions = extension()
     location = askQuestion()
     destinationDirectory = location
     cleanUpLocation(location, extensions, destinationDirectory)
+    print("All the files have been moved")
 
 if __name__ == "__main__":
     main()
